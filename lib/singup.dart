@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:imovelapp/main.dart';
 import 'package:imovelapp/sidemenu-menu.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 
 class SignUpPage extends StatefulWidget {
