@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget>[
           
           Text(
-            'Don\'t have an account ?',
+            'Não possui uma conta?',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           ),
           SizedBox(
@@ -231,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                   MaterialPageRoute(builder: (context) =>ResetPasswordPage ()));
             },
             child: Text(
-              'Register',
+              'Registrar',
               style: TextStyle(
                   color: Color(0xfff79c4f),
                   fontSize: 13,

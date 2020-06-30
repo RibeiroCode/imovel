@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imovelapp/menu.dart';
 
 class SideMenu extends StatelessWidget {
   @override
@@ -12,12 +13,22 @@ class SideMenu extends StatelessWidget {
               'Side menu',
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
+            
             decoration: BoxDecoration(
                 color: Colors.deepPurple,
                 image: DecorationImage(
                     fit: BoxFit.fill,
                     image: AssetImage('assets/images/cover.jpg'))),
           ),
+          Stack( children: [
+              Positioned (
+                child: IconButton (icon: Icon ( Icons.arrow_back),
+                onPressed: () {
+                  Navigator.push (context, MaterialPageRoute (builder: (context) => Menu () ));
+                }
+              )
+               ) ]
+            ),
           ListTile(
             leading: Icon(Icons.input),
             title: Text('Welcome'),

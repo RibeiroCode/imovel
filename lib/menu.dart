@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imovelapp/cadastroimovel.dart';
+import 'package:imovelapp/contatos.dart';
+import 'package:imovelapp/meuperfil.dart';
 import 'package:imovelapp/sidemenu-menu.dart';
 
 class Menu extends StatelessWidget {
@@ -66,43 +68,22 @@ class DashBoard extends StatelessWidget {
       list.add(createGridItem(i));
     }
     return list;
+
+
   }
 
   Widget createGridItem( position) {
-    var color = Colors.white;
-    var icondata = Icons.add;
-    var descricaoBotao = "";
 
-    switch ( position) {
-      case 0: // Imoveis
-        icondata = Icons.home;
-        descricaoBotao = "Imóveis";
-        break ;
-      case 1: //Adicionar Imovel
-        icondata = Icons.add_box;
-        descricaoBotao = "Adicionar Imóvel";
-        break; 
-      case 2:// Perfil
-        icondata = Icons.person;
-        descricaoBotao = "Perfil";
-        break;
-      case 3:// Transações
-        icondata = Icons.swap_horiz;
-        descricaoBotao = "Transações";
-        break;
-      case 4: // Contatos
-        icondata = Icons.group;
-        descricaoBotao = "Contatos";
-        break;
-      case 5: // Sair
-        icondata = Icons.highlight_off;
-        descricaoBotao = "Sair";
-        break;
-    }
+    var color = Colors.white;
+    IconDataWrapper icondata = new IconDataWrapper("");
+    DescricaoWrapper descricaoBotao = DescricaoWrapper("");
+
+    buttonContextData(position, icondata, descricaoBotao);
 
     color = Colors.deepPurple;
 
     return Builder(builder: (context) {
+
       return Padding(
         padding:
             const EdgeInsets.only(left: 10.0, right: 10, bottom: 5, top: 5),
@@ -115,22 +96,21 @@ class DashBoard extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () { 
-                            Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text("Selected Item $position")));
+               onTapEvent(context, position);
             },
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Icon(
-                    icondata,
+                    icondata.value,
                     size: 40,
                     color: Colors.white,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      descricaoBotao,
+                      descricaoBotao.value,
                       style: TextStyle(color: Colors.white),
                     ),
                   )
@@ -140,9 +120,71 @@ class DashBoard extends StatelessWidget {
           ),
         ),
       );
-      ;
     });
   }
+}
+
+class IconDataWrapper {
+  var value;
+  IconDataWrapper(this.value);
+}
+class DescricaoWrapper {
+  var value;
+  DescricaoWrapper(this.value);
+}
+
+void buttonContextData(int position, IconDataWrapper icondata, DescricaoWrapper descricaoBotao)
+{
+   switch ( position) {
+      case 0: // Imoveis
+        icondata.value = Icons.home;
+        descricaoBotao.value = "Imóveis";
+        break ;
+      case 1: //Adicionar Imovel
+        icondata.value = Icons.add_box;
+        descricaoBotao.value= "Adicionar Imóvel";
+        break;
+
+      case 2:// Perfil
+        icondata.value = Icons.person;
+        descricaoBotao.value = "Perfil";
+        break;
+      case 3:// Transações
+        icondata.value= Icons.swap_horiz;
+        descricaoBotao.value = "Transações";
+        break;
+      case 4: // Contatos
+        icondata.value= Icons.group;
+        descricaoBotao.value= "Contatos";
+        break;
+      case 5: // Sair
+        icondata.value= Icons.highlight_off;
+        descricaoBotao.value= "Sair";
+        break;
+    }
+}
+
+void onTapEvent (var context, int position) { 
+  if (position == 0 ) {
+       onTap : () {}; Navigator.push (context, MaterialPageRoute (builder: (context)  => SideMenu ()));
+    }
+    else if (position == 1 ) { onTap  () {}; Navigator.push (context, MaterialPageRoute (builder: (context)  => CadastroImovel ()));
+
+    }
+
+  else if (position ==2 ) { onTap () {}; Navigator.push (context, MaterialPageRoute (builder: (context) => MeuPerfil ()));
+  }
+
+  else if (position == 3) {onTap:(){}; Navigator.push (context, MaterialPageRoute (builder: (context) => Contatos ()));
+  
+  }
+  else if (position == 4) {onTap:(){}; Navigator.push (context, MaterialPageRoute (builder: (context) => Contatos ()));
+  
+  }
+  else if (position == 5) {onTap:(){}; Navigator.push (context, MaterialPageRoute (builder: (context) => SideMenu ()));
+  
+  }
+    
 }
 
 class ShapesPainter extends CustomPainter {
