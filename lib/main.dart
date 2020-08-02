@@ -6,29 +6,25 @@ import 'package:imovelapp/resetpasswordpage.dart';
 import 'package:imovelapp/cadastroimovel.dart';
 import 'package:imovelapp/menu.dart';
 import 'package:imovelapp/contatos.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'config.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-
-  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false, 
+      title: 'NOME DO APLICATIVO',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(title: 'Flutter Demo Home Page'),
+      home: LoginPage(title: 'COLOCAR AQUI O NOME DO APLICATIVO'),
+
     );
   }
 }
@@ -43,28 +39,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Widget _backButton() {
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(left: 0, top: 10, bottom: 10),
-              child: Icon(Icons.keyboard_arrow_left, color: Colors.black),
-            ),
-            Text('Back',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500))
-         
-          
-          ] 
-          ),
-      ),
-    );
-  }
+  final _userNameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   Widget _entryField(String title, {bool isPassword = false}) {
     return Container(
@@ -80,6 +56,9 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
+              //Se is password for true, usa passwordcontrolle senão username controller
+              controller:
+                  isPassword ? _passwordController : _userNameController,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -90,44 +69,70 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
- 
- 
-  Widget _submitButton( ) {
-  
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          
-          
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xfffb8c00), Color(0xfffb8c00)])),
-              
-      child: Text(
-        'Login',
-        style: TextStyle(fontSize: 20, color: Colors.white),
-        
-        
-      )
-      
-      
-      
-      
-    );
-     
+  Widget _submitButton() {
+    return ButtonTheme(
+        minWidth: MediaQuery.of(context).size.width,
+        height: 80.0,
+        child: RaisedButton(
+          color: Color(0xfffb8c00),
+          onPressed: () => {
+            tryLogin(),
+          },
+          child: Text('Entrar', style: TextStyle(color: Colors.blueAccent)),
+        ));
   }
 
+  Future<void> tryLogin() async {
+    var password = _passwordController.text;
+    var userName = _userNameController.text;
+
+  var headers = {
+      "content-type": "application/json",
+      "accept": "application/json",
+    };
+
+    bool userCanLogin = false;
+
+    String data = '{"login": "$password", "accessKey": "$userName"}';
+
+    print(data);
+
+    var resp = await http.post(GLOBAL_VARIABLES["API_URL"] + "/Login/v1",
+        body: data, headers: headers);
+
+    final body = jsonDecode(resp.body);
+  
+    print(body);
+
+   if (body["autenticated"] == true) {
+      userCanLogin = true;
+    }
+
+    if (userCanLogin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Menu()),
+      );
+    } else {
+      // set up the button
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Ops..."),
+            content: Text("Verifique seu login ou sua senha."),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () {},
+              )
+            ],
+          );
+        },
+      );
+    }
+
+  }
 
   Widget _divider() {
     return Container(
@@ -145,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          Text('or'),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -162,54 +166,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _facebookButton() {
-    return Container(
-      height: 50,
-      margin: EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xff1959a9),
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(5),
-                    topLeft: Radius.circular(5)),
-              ),
-              alignment: Alignment.center,
-              child: Text('f',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w400)),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xff2872ba),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(5),
-                    topRight: Radius.circular(5)),
-              ),
-              alignment: Alignment.center,
-              child: Text('Log in with Facebook',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _createAccountLabel() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20),
@@ -217,7 +173,6 @@ class _LoginPageState extends State<LoginPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          
           Text(
             'Não possui uma conta?',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
@@ -228,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
           InkWell(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>ResetPasswordPage ()));
+                  MaterialPageRoute(builder: (context) => ResetPasswordPage()));
             },
             child: Text(
               'Registrar',
@@ -236,27 +191,15 @@ class _LoginPageState extends State<LoginPage> {
                   color: Color(0xfff79c4f),
                   fontSize: 13,
                   fontWeight: FontWeight.w600),
-                  
             ),
-            
-            
           ),
-          
         ],
       ),
     );
   }
 
   Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: 'ADICIONAR IMAGEM AQUI',
-          style:TextStyle (
-            fontSize: 30,
-            fontWeight: FontWeight.w700,
-            color: Color(0xffe46b10),
-          ), ), );
+    return Image(image: AssetImage('assets/logoimg.png'));
   }
 
   Widget _emailPasswordWidget() {
@@ -271,70 +214,60 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
+        body: SingleChildScrollView(
+            child: Container(
+      height: MediaQuery.of(context).size.height,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: SizedBox(),
+                ),
+                _title(),
+                SizedBox(
+                  height: 50,
+                ),
+                _emailPasswordWidget(),
+                SizedBox(
+                  height: 20,
+                ),
+                _submitButton(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: SizedBox(),
+                  height: 40,
+                  alignment: Alignment.centerRight,
+                  child: FlatButton(
+                      child: Text(
+                        "Recuperar Senha",
+                        textAlign: TextAlign.right,
                       ),
-                      _title(),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      _emailPasswordWidget(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _submitButton(),
-                      Container(
-                height: 40,
-                alignment: Alignment.centerRight,
-                child: FlatButton(
-                    child: Text(
-                      "Recuperar Senha",
-                      textAlign: TextAlign.right,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context, 
-                      MaterialPageRoute (
-                        builder: (context) => Menu (),
-                 ) , ) ;
-                    }
-                      
-                      ), ),
-                      
-                      _divider(),
-                      _facebookButton(),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(),
-                      ),
-                      
-                    ],
-                  ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ResetPasswordPage(),
+                          ),
+                        );
+                      }),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _createAccountLabel(),
-                  
+                _divider(),
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(),
                 ),
-                Positioned(top: 40, left: 0, child: _backButton()),
-               
-             
               ],
             ),
-          )
-        )
-      );
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _createAccountLabel(),
+          )        ],
+      ),
+    )));
   }
 }

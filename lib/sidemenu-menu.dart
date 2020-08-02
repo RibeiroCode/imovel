@@ -14,21 +14,14 @@ class SideMenu extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             
+            
             decoration: BoxDecoration(
                 color: Colors.deepPurple,
                 image: DecorationImage(
                     fit: BoxFit.fill,
                     image: AssetImage('assets/images/cover.jpg'))),
           ),
-          Stack( children: [
-              Positioned (
-                child: IconButton (icon: Icon ( Icons.arrow_back),
-                onPressed: () {
-                  Navigator.push (context, MaterialPageRoute (builder: (context) => Menu () ));
-                }
-              )
-               ) ]
-            ),
+          
           ListTile(
             leading: Icon(Icons.input),
             title: Text('Welcome'),
@@ -54,6 +47,16 @@ class SideMenu extends StatelessWidget {
             title: Text('Logout'),
             onTap: () => {Navigator.of(context).pop()},
           ),
+
+          Stack( children: [
+              Positioned (
+                child: IconButton (icon: Icon ( Icons.arrow_back),
+                onPressed: () {
+                  Navigator.push (context, MaterialPageRoute (builder: (context) => Menu () ));
+                }
+              )
+               ) ]
+            ),
         ],
       ),
     );
